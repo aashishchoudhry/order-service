@@ -14,7 +14,7 @@ public static class InfrastructureDependency
         IConfiguration configuration)
     {
         services.AddDbContext<OrderDbContext>(options =>
-        options.UseSqlite("Data Source=orders.db"));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IOrderRepository, OrderRepository>();
 

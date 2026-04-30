@@ -13,7 +13,7 @@ namespace OrderService.Infrastructure.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "Status",
                 table: "Orders",
-                type: "TEXT",
+                type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
         }

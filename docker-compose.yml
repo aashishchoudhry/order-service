@@ -12,6 +12,22 @@ services:
       retries: 5
       start_period: 10s
 
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Admin@1234
+      - MSSQL_PID=Developer
+    healthcheck:
+      test: ["CMD-SHELL", "/bin/bash -c 'cat < /dev/null > /dev/tcp/localhost/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   api:
     build: .
     container_name: orderservice-api
@@ -19,6 +35,10 @@ services:
       - "8080:8080"
     environment:
       - RabbitMQ__Host=rabbitmq
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=OrderService;User Id=sa;Password=Admin@1234;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      sqlserver:
         condition: service_healthy
