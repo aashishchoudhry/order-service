@@ -1,15 +1,35 @@
 using OrderService.Application;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Data;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(ApplicationAssemblyReference.AssemblyReference));
 builder.Services.AddLogging();
 builder.Services.RegisterInfraServices(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Enter only the JWT token. Do not include the Bearer prefix."
+    });
+
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", document, null),
+            []
+        }
+    });
+});
+
 
 var app = builder.Build();
 
@@ -28,8 +48,8 @@ app.UseDeveloperExceptionPage();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
