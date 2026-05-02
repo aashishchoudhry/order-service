@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using OrderService.API.Contracts;
 using OrderService.Application.Features.Auth.Commands.Login;
 using OrderService.Application.Features.Auth.Commands.Register;
 
@@ -20,14 +19,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
-        var result = await _mediator.Send(new RegisterUserCommandRequest(
-            request.FirstName,
-            request.LastName,
-            request.Username,
-            request.Password));
-
+        var result = await _mediator.Send(request);
         if (!result.Success)
             return BadRequest(result.Error);
 
@@ -36,10 +30,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginUserCommandRequest request)
     {
-        var result = await _mediator.Send(new LoginUserCommandRequest(request.Username, request.Password));
-
+        var result = await _mediator.Send(request);
         if (!result.Success)
             return Unauthorized(result.Error);
 
