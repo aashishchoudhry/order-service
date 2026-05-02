@@ -1,5 +1,6 @@
 using MediatR;
 using OrderService.Application.Auth;
+using OrderService.Application.Common;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Interfaces;
 

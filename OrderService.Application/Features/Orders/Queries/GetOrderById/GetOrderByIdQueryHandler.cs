@@ -1,10 +1,9 @@
 using MediatR;
-using OrderService.Domain.Entities;
 using OrderService.Domain.Interfaces;
 
 namespace OrderService.Application.Features.Orders.Queries.GetOrderById;
 
-public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQueryRequest, Order?>
+public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQueryRequest, GetOrderByIdResponse?>
 {
     private readonly IOrderRepository _orderRepository;
 
@@ -13,8 +12,16 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQueryRequest
         _orderRepository = orderRepository;
     }
 
-    public async Task<Order?> Handle(GetOrderByIdQueryRequest request, CancellationToken cancellationToken)
+    public async Task<GetOrderByIdResponse?> Handle(GetOrderByIdQueryRequest request, CancellationToken cancellationToken)
     {
-        return await _orderRepository.GetByIdAsync(request.Id);
+        var order = await _orderRepository.GetByIdAsync(request.Id);
+        if (order == null) return null;
+
+        return new GetOrderByIdResponse(
+            order.Id,
+            order.CustomerName,
+            order.TotalAmount,
+            order.Status,
+            order.CreatedAt);
     }
 }

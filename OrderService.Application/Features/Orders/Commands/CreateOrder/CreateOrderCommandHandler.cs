@@ -6,7 +6,7 @@ using OrderService.Domain.Interfaces;
 
 namespace OrderService.Application.Features.Orders.Commands.CreateOrder;
 
-public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandRequest, int>
+public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandRequest, CreateOrderResponse>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IPublishEndpoint _publishEndpoint;
@@ -17,7 +17,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandReque
         _publishEndpoint = publishEndpoint;
     }
 
-    public async Task<int> Handle(CreateOrderCommandRequest request, CancellationToken cancellationToken)
+    public async Task<CreateOrderResponse> Handle(CreateOrderCommandRequest request, CancellationToken cancellationToken)
     {
         var order = new Order
         {
@@ -30,6 +30,6 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandReque
             new OrderCreatedEvent(order.Id, order.CustomerName, order.TotalAmount),
             cancellationToken);
 
-        return order.Id;
+        return new CreateOrderResponse(order.Id);
     }
 }

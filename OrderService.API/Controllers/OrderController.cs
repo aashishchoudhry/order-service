@@ -20,25 +20,25 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<GetAllOrdersResponse>>> GetAll()
     {
-        var orders = await _mediator.Send(new GetAllOrdersQueryRequest());
-        return Ok(orders);
+        var response = await _mediator.Send(new GetAllOrdersQueryRequest());
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<ActionResult<GetOrderByIdResponse>> GetById(int id)
     {
-        var order = await _mediator.Send(new GetOrderByIdQueryRequest(id));
-        if (order == null) return NotFound();
-        return Ok(order);
+        var response = await _mediator.Send(new GetOrderByIdQueryRequest(id));
+        if (response == null) return NotFound();
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateOrderCommandRequest request)
+    public async Task<ActionResult<CreateOrderResponse>> Create([FromBody] CreateOrderCommandRequest request)
     {
-        var id = await _mediator.Send(request);
-        return CreatedAtAction(nameof(GetById), new { id }, new { id });
+        var response = await _mediator.Send(request);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     [HttpPut("{id}")]

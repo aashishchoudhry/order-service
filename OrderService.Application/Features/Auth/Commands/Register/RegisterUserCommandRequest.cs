@@ -1,4 +1,5 @@
 using MediatR;
+using OrderService.Application.Common;
 
 namespace OrderService.Application.Features.Auth.Commands.Register;
 
