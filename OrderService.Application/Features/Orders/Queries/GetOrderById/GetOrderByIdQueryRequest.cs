@@ -3,4 +3,4 @@ using OrderService.Domain.Entities;
 
 namespace OrderService.Application.Features.Orders.Queries.GetOrderById;
 
-public record GetOrderByIdQuery(int Id) : IRequest<Order?>;
+public record GetOrderByIdQueryRequest(int Id) : IRequest<Order?>;

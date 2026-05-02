@@ -4,7 +4,7 @@ using OrderService.Domain.Interfaces;
 
 namespace OrderService.Application.Features.Orders.Queries.GetOrderById;
 
-public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order?>
+public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQueryRequest, Order?>
 {
     private readonly IOrderRepository _orderRepository;
 
@@ -13,7 +13,7 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
         _orderRepository = orderRepository;
     }
 
-    public async Task<Order?> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Order?> Handle(GetOrderByIdQueryRequest request, CancellationToken cancellationToken)
     {
         return await _orderRepository.GetByIdAsync(request.Id);
     }

@@ -2,7 +2,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using OrderService.API.Auth;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -32,13 +31,13 @@ namespace Microsoft.Extensions.DependencyInjection
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
             services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
             });
-            services.AddSingleton<JwtTokenGenerator>();
         }
     }
 }

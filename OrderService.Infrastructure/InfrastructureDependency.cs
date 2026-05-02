@@ -2,6 +2,8 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OrderService.Application.Auth;
+using OrderService.Infrastructure.Auth;
 using OrderService.Domain.Interfaces;
 using OrderService.Infrastructure.Data;
 using OrderService.Infrastructure.Messaging;
@@ -17,6 +19,9 @@ public static class InfrastructureDependency
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         services.AddMassTransit(x =>
         {

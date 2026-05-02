@@ -1,13 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Application.DTOs;
 using OrderService.Application.Features.Orders.Commands.CreateOrder;
 using OrderService.Application.Features.Orders.Commands.DeleteOrder;
 using OrderService.Application.Features.Orders.Commands.UpdateOrder;
 using OrderService.Application.Features.Orders.Queries.GetAllOrders;
 using OrderService.Application.Features.Orders.Queries.GetOrderById;
-using OrderService.Domain.Entities;
-using OrderService.Domain.Interfaces;
 
 namespace OrderService.API.Controllers;
 
@@ -15,60 +12,47 @@ namespace OrderService.API.Controllers;
 [Route("api/[controller]")]
 public class OrderController : ControllerBase
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IMediator _mediatR;
+    private readonly IMediator _mediator;
 
-    public OrderController(IOrderRepository orderRepository, IMediator mediatR)
+    public OrderController(IMediator mediator)
     {
-        _orderRepository = orderRepository;
-        _mediatR = mediatR;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _mediatR.Send(new GetAllOrdersQuery());
+        var orders = await _mediator.Send(new GetAllOrdersQueryRequest());
         return Ok(orders);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var order = await _mediatR.Send(new GetOrderByIdQuery(id));
+        var order = await _mediator.Send(new GetOrderByIdQueryRequest(id));
         if (order == null) return NotFound();
         return Ok(order);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateOrderDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateOrderCommandRequest request)
     {
-        var newOrder = new Order
-        {
-            CustomerName = dto.CustomerName,
-            TotalAmount = dto.TotalAmount
-        };
-        await _mediatR.Send(new CreateOrderCommand(newOrder.CustomerName, newOrder.TotalAmount));
-        return CreatedAtAction(nameof(GetById), new { id = newOrder.Id }, newOrder);
+        var id = await _mediator.Send(request);
+        return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateOrderDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateOrderCommandRequest request)
     {
-        var order = await _mediatR.Send(new GetOrderByIdQuery(id));
-        if (order == null) return NotFound();
-
-        order.CustomerName = dto.CustomerName;
-        order.TotalAmount = dto.TotalAmount;
-
-        if (id != order.Id) return BadRequest();
-        await _mediatR.Send(new UpdateOrderCommand(order.Id, order.CustomerName, order.TotalAmount));
+        if (id != request.Id) return BadRequest("Route id does not match request id.");
+        await _mediator.Send(request);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _mediatR.Send(new DeleteOrderCommand(id));
+        await _mediator.Send(new DeleteOrderCommandRequest(id));
         return NoContent();
     }
 }

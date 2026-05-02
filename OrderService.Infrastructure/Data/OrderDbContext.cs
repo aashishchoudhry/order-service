@@ -10,4 +10,5 @@ public class OrderDbContext : DbContext
     }
 
     public DbSet<Order> Orders { get; set; }
+    public DbSet<User> Users { get; set; }
 }

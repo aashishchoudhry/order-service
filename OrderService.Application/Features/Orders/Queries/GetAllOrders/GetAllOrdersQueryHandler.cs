@@ -1,9 +1,10 @@
-namespace OrderService.Application.Features.Orders.Queries.GetAllOrders;
 using MediatR;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Interfaces;
 
-public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, IEnumerable<Order>>
+namespace OrderService.Application.Features.Orders.Queries.GetAllOrders;
+
+public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQueryRequest, IEnumerable<Order>>
 {
     private readonly IOrderRepository _repository;
 
@@ -12,7 +13,7 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, IEnum
         _repository = repository;
     }
 
-    public async Task<IEnumerable<Order>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Order>> Handle(GetAllOrdersQueryRequest request, CancellationToken cancellationToken)
     {
         return await _repository.GetAllAsync();
     }
