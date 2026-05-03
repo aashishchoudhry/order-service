@@ -1,16 +1,16 @@
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrderService.Application.Events;
+using SharedContracts.Events;
 using OrderService.Infrastructure.Data;
 
 namespace OrderService.Infrastructure.Messaging;
-public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
+public class OrderStatusUpdatedConsumer : IConsumer<OrderCreatedEvent>
 {
-    private readonly ILogger<OrderCreatedConsumer> _logger;
+    private readonly ILogger<OrderStatusUpdatedConsumer> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public OrderCreatedConsumer(ILogger<OrderCreatedConsumer> logger, IServiceScopeFactory serviceScopeFactory  )
+    public OrderStatusUpdatedConsumer(ILogger<OrderStatusUpdatedConsumer> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;

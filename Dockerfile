@@ -1,19 +1,19 @@
-# Stage 1 — Build
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY OrderService.API/OrderService.API.csproj OrderService.API/
-COPY OrderService.Application/OrderService.Application.csproj OrderService.Application/
-COPY OrderService.Infrastructure/OrderService.Infrastructure.csproj OrderService.Infrastructure/
-COPY OrderService.Domain/OrderService.Domain.csproj OrderService.Domain/
+COPY OrderService/OrderService.API/OrderService.API.csproj OrderService/OrderService.API/
+COPY OrderService/OrderService.Application/OrderService.Application.csproj OrderService/OrderService.Application/
+COPY OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj OrderService/OrderService.Infrastructure/
+COPY OrderService/OrderService.Domain/OrderService.Domain.csproj OrderService/OrderService.Domain/
+COPY SharedContracts/SharedContracts.csproj SharedContracts/
 
-RUN dotnet restore OrderService.API/OrderService.API.csproj
+RUN dotnet restore OrderService/OrderService.API/OrderService.API.csproj
 
-COPY . .
+COPY OrderService/ OrderService/
+COPY SharedContracts/ SharedContracts/
 
-RUN dotnet publish OrderService.API/OrderService.API.csproj -c Release -o /app/publish
+RUN dotnet publish OrderService/OrderService.API/OrderService.API.csproj -c Release -o /app/publish
 
-# Stage 2 — Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .

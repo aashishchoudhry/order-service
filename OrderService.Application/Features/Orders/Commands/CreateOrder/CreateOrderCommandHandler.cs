@@ -1,6 +1,6 @@
 using MassTransit;
 using MediatR;
-using OrderService.Application.Events;
+using SharedContracts.Events;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Interfaces;
 
@@ -27,7 +27,12 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandReque
 
         await _orderRepository.AddAsync(order);
         await _publishEndpoint.Publish(
-            new OrderCreatedEvent(order.Id, order.CustomerName, order.TotalAmount),
+            new OrderCreatedEvent
+            {
+                OrderId = order.Id,
+                CustomerName = order.CustomerName,
+                TotalAmount = order.TotalAmount
+            },
             cancellationToken);
 
         return new CreateOrderResponse(order.Id);

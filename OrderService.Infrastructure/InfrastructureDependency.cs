@@ -1,7 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using OrderService.Application.Auth;
 using OrderService.Infrastructure.Auth;
 using OrderService.Domain.Interfaces;
@@ -25,7 +24,7 @@ public static class InfrastructureDependency
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumersFromNamespaceContaining<OrderCreatedConsumer>();
+            x.AddConsumer<OrderStatusUpdatedConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -34,7 +33,11 @@ public static class InfrastructureDependency
                     h.Username("guest");
                     h.Password("guest");
                 });
-                cfg.ConfigureEndpoints(context);
+
+                cfg.ReceiveEndpoint("order-service-order-created", e =>
+                {
+                    e.ConfigureConsumer<OrderStatusUpdatedConsumer>(context);
+                });
             });
         });
     }
