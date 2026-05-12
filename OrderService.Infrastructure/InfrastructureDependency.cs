@@ -40,5 +40,9 @@ public static class InfrastructureDependency
                 });
             });
         });
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+        });
     }
 }

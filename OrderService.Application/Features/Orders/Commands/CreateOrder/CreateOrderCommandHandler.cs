@@ -1,5 +1,6 @@
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using SharedContracts.Events;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Interfaces;
@@ -10,11 +11,13 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandReque
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IDistributedCache _cache;
 
-    public CreateOrderCommandHandler(IOrderRepository orderRepository, IPublishEndpoint publishEndpoint)
+    public CreateOrderCommandHandler(IOrderRepository orderRepository, IPublishEndpoint publishEndpoint, IDistributedCache cache)
     {
         _orderRepository = orderRepository;
         _publishEndpoint = publishEndpoint;
+        _cache = cache;
     }
 
     public async Task<CreateOrderResponse> Handle(CreateOrderCommandRequest request, CancellationToken cancellationToken)
@@ -26,6 +29,8 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandReque
         };
 
         await _orderRepository.AddAsync(order);
+        await _cache.RemoveAsync("all_orders", cancellationToken);
+
         await _publishEndpoint.Publish(
             new OrderCreatedEvent
             {
